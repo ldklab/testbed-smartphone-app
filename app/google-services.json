@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "858262046811",
+    "firebase_url": "https://messagebrokerapp-1.firebaseio.com",
+    "project_id": "messagebrokerapp-1",
+    "storage_bucket": "messagebrokerapp-1.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:858262046811:android:3830d2b45a93cb5c",
+        "android_client_info": {
+          "package_name": "edu.wpi.messagebrokersmartphoneapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "858262046811-cg0re6n6aer7vl5dqlrebghgthfr7h9o.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "edu.wpi.messagebrokersmartphoneapp",
+            "certificate_hash": "10bc1c8eedfdf5b0799f319a386fc25f033b2cf3"
+          }
+        },
+        {
+          "client_id": "858262046811-o6e6eajtcev7p60q5q1f1t8gkur0g12p.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCws0E-gTh0lCPYhpFeI1l6ZFxKxQm6AKE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "858262046811-o6e6eajtcev7p60q5q1f1t8gkur0g12p.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
