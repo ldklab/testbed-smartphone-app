@@ -2,8 +2,12 @@ package edu.wpi.messagebrokersmartphoneapp;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.StrictMode;
+import android.preference.PreferenceManager;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -19,11 +23,27 @@ import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.android.volley.Cache;
+import com.android.volley.Network;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.BasicNetwork;
+import com.android.volley.toolbox.DiskBasedCache;
+import com.android.volley.toolbox.HurlStack;
+import com.android.volley.toolbox.JsonObjectRequest;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import org.json.*;
 
+import java.io.DataOutputStream;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -33,17 +53,32 @@ public class NotificationActivity extends AppCompatActivity {
 
     private ListView lv;
     List<InteractionResponse> interactionResponses;
+    String interactionID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_notification);
 
+
+        // ---------- NETWORK CONFIGURATION ----------
+        int SDK_INT = android.os.Build.VERSION.SDK_INT;
+        if (SDK_INT > 8)
+        {
+            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
+                    .permitAll().build();
+            StrictMode.setThreadPolicy(policy);
+            //your codes here
+        }
+        // ---------- END NETWORK CONFIGURATION ----------
+
+
         //Retrieving data from the notification intent
         Intent intent = getIntent();
         String title = intent.getStringExtra("TITLE");
         String description = intent.getStringExtra("DESCRIPTION");
         String interactionData = intent.getStringExtra("INTERACTION");
+        interactionID = intent.getStringExtra("INTERACTION_ID");
 
         // Setting Title and Content in the view
         TextView titleTextView = findViewById(R.id.title); // Title
@@ -134,6 +169,109 @@ public class NotificationActivity extends AppCompatActivity {
     public void sendButton(View view){
         System.out.println("Send clicked");
         System.out.println(interactionResponses);
+
+        //Retrieve API_URL
+        Context ctx = getApplicationContext();
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(ctx);
+        String BASE_API_RUL = sharedPref.getString(getString(R.string.API_URL), "");
+        String API_URL = BASE_API_RUL + "/interactions/" + interactionID;
+
+        System.out.println("Sending data to API_URL: " + API_URL);
+        jsonPUT(API_URL, interactionResponses);
+    }
+
+
+    protected String jsonPUT(String API_URL, List<InteractionResponse> postDataList) {
+
+        // ---------- Creating JSON ----------
+        JSONArray jsonArray = new JSONArray();
+        for(InteractionResponse IR : postDataList) {
+            JSONObject jsonObject = new JSONObject();
+            try {
+                jsonObject.put("name", IR.getName());
+                jsonObject.put("value", IR.getValue());
+            }catch(Exception e){
+                System.out.println("Error happened!");
+            }
+
+            jsonArray.put(jsonObject);
+        }
+        System.out.println("Real data: " + jsonArray.toString());
+        JSONObject finalObject = new JSONObject();;
+        try{
+            finalObject.put("data", jsonArray);
+        }catch(Exception e){
+            System.out.println("Error happened!");
+        }
+        // ---------- END Creating JSON ----------
+
+
+
+        RequestQueue requestQueue;
+
+// Instantiate the cache
+        Cache cache = new DiskBasedCache(getCacheDir(), 1024 * 1024); // 1MB cap
+
+// Set up the network to use HttpURLConnection as the HTTP client.
+        Network network = new BasicNetwork(new HurlStack());
+
+// Instantiate the RequestQueue with the cache and network.
+        requestQueue = new RequestQueue(cache, network);
+
+// Start the queue
+        requestQueue.start();
+
+
+
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.PUT, API_URL, finalObject, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                System.out.println(response);
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                System.out.println(error);
+            }
+        });
+
+        requestQueue.add(jsonObjectRequest);
+
+        return null;
+
+        /*String data = "";
+
+        HttpURLConnection httpURLConnection = null;
+        try {
+
+            httpURLConnection = (HttpURLConnection) new URL(API_URL).openConnection();
+            httpURLConnection.setRequestMethod("PUT");
+
+            httpURLConnection.setDoOutput(true);
+
+            DataOutputStream wr = new DataOutputStream(httpURLConnection.getOutputStream());
+            wr.writeBytes(jsonArray.toString());
+            wr.flush();
+            wr.close();
+
+            InputStream in = httpURLConnection.getInputStream();
+            InputStreamReader inputStreamReader = new InputStreamReader(in);
+
+            int inputStreamData = inputStreamReader.read();
+            while (inputStreamData != -1) {
+                char current = (char) inputStreamData;
+                inputStreamData = inputStreamReader.read();
+                data += current;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (httpURLConnection != null) {
+                httpURLConnection.disconnect();
+            }
+        }
+
+        return data;*/
     }
 
 

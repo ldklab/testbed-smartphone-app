@@ -1,10 +1,13 @@
 package edu.wpi.messagebrokersmartphoneapp;
 
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.IBinder;
 import android.os.StrictMode;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import org.json.JSONObject;
@@ -54,6 +57,8 @@ public class DiscoverableService extends Service {
                     //Packet received
                     String data = new String(packet.getData()).trim();
                     Log.i("MyDebug", "Packet received from: " + packet.getAddress().getHostAddress() + ":" + packet.getPort() + " data: " + data);
+                    JSONObject jsonData = new JSONObject(data);
+                    saveAPIURL(jsonData.getString("API_URL"));
 
                     Map<String, String> myMap = new HashMap<>();
                     myMap.put("deviceID", "oifjqwk5wf7qcqwsfcqw");
@@ -91,6 +96,18 @@ public class DiscoverableService extends Service {
             } catch (IOException e) {
                 Log.e("MyDebug", "IOException: " + e.getMessage());
             }
+        }
+
+
+        public void saveAPIURL(String API_URL){
+            //SharedPreferences sharedPref = getApplicationContext(). getActivity().getPreferences(Context.MODE_PRIVATE);
+            System.out.println("Saving API_URL: " + API_URL);
+            Context ctx = getApplicationContext();
+            SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(ctx);
+
+            SharedPreferences.Editor editor = sharedPref.edit();
+            editor.putString(getString(R.string.API_URL), API_URL);
+            editor.commit();
         }
 
     }

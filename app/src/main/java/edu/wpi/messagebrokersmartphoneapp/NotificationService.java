@@ -92,6 +92,7 @@ public class NotificationService extends FirebaseMessagingService {
         String notificationTitle = data.get("title");
         String notificationContent = data.get("description");
         String interactionData = data.get("interaction");
+        String interactionID = data.get("id");
 
 
         Random ran = new Random();
@@ -110,6 +111,7 @@ public class NotificationService extends FirebaseMessagingService {
         notifyIntent.putExtra("TITLE", notificationTitle);
         notifyIntent.putExtra("DESCRIPTION", notificationContent);
         notifyIntent.putExtra("INTERACTION", interactionData);
+        notifyIntent.putExtra("INTERACTION_ID", interactionID);
         notifyIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK); // Set the Activity to start in a new, empty task
         PendingIntent notifyPendingIntent = PendingIntent.getActivity(this, 0, notifyIntent, PendingIntent.FLAG_UPDATE_CURRENT); // Create the PendingIntent
         builder.setContentIntent(notifyPendingIntent); // Setting intent for that notification
