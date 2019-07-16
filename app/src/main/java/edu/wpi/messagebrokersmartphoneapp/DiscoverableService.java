@@ -16,7 +16,9 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class DiscoverableService extends Service {
@@ -60,11 +62,28 @@ public class DiscoverableService extends Service {
                     JSONObject jsonData = new JSONObject(data);
                     saveAPIURL(jsonData.getString("API_URL"));
 
-                    Map<String, String> myMap = new HashMap<>();
+                    Map<String, Object> myMap = new HashMap<>();
                     myMap.put("deviceID", "oifjqwk5wf7qcqwsfcqw");
                     myMap.put("name", deviceName);
                     myMap.put("address", "192.168.0.102");
                     myMap.put("timestamp", "1562941053222");
+
+                    List<String> inCapabilities = new ArrayList<>();
+                    inCapabilities.add("text");
+                    inCapabilities.add("microphone");
+                    inCapabilities.add("camera");
+                    List<String> outCapabilities = new ArrayList<>();
+                    outCapabilities.add("text");
+                    outCapabilities.add("video");
+                    outCapabilities.add("audio");
+                    outCapabilities.add("vibration");
+                    outCapabilities.add("notification");
+                    Map<String, List> capabilitiesMap = new HashMap<>();
+                    capabilitiesMap.put("in", inCapabilities);
+                    capabilitiesMap.put("out", outCapabilities);
+
+                    myMap.put("capabilities", capabilitiesMap);
+
                     JSONObject jsonObject = new JSONObject(myMap);
 
                     System.out.println("About to send: " + jsonObject.toString());
