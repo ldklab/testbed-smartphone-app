@@ -10,6 +10,10 @@ import android.os.StrictMode;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
+
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -24,6 +28,7 @@ import java.util.Map;
 public class DiscoverableService extends Service {
 
     private final String deviceName = Build.MANUFACTURER + " " + Build.MODEL;
+    String deviceID = new String();
 
     public DiscoverableService() {
         Log.d("MyDebug", "Discoverable Service Started!");
@@ -41,6 +46,13 @@ public class DiscoverableService extends Service {
     public class ClientListen implements Runnable {
         @Override
         public void run() {
+
+            FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(new OnSuccessListener<InstanceIdResult>() {
+                @Override
+                public void onSuccess(InstanceIdResult instanceIdResult) {
+                    deviceID = instanceIdResult.getToken();
+                }
+            });
 
             try {
                 DatagramSocket socket = new DatagramSocket(3017);
@@ -63,7 +75,7 @@ public class DiscoverableService extends Service {
                     saveAPIURL(jsonData.getString("API_URL"));
 
                     Map<String, Object> myMap = new HashMap<>();
-                    myMap.put("deviceID", "oifjqwk5wf7qcqwsfcqw");
+                    myMap.put("deviceID", deviceID);
                     myMap.put("name", deviceName);
                     myMap.put("address", "192.168.0.102");
                     myMap.put("timestamp", "1562941053222");
