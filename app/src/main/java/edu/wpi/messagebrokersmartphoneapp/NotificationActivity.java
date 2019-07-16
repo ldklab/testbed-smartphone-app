@@ -38,6 +38,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import org.json.*;
+import org.w3c.dom.Text;
 
 import java.io.DataOutputStream;
 import java.io.InputStream;
@@ -92,16 +93,25 @@ public class NotificationActivity extends AppCompatActivity {
         List<InteractionInput> inputs = processInput(interactionData); // Input retrieved
 
         interactionResponses = new ArrayList<>();
-        LinearLayout myLayout = (LinearLayout) findViewById(R.id.layout_notification_activity);
+        LinearLayout contentLayout = (LinearLayout) findViewById(R.id.content_layout);
 
         for(int i = 0; i < inputs.size(); i++) {
             final InteractionInput input = inputs.get(i);
             final InteractionResponse IR = new InteractionResponse(input.getName());
             interactionResponses.add(IR);
 
+            LinearLayout myLayout = new LinearLayout(this); // Creating horizontal layout to hold Text field and input box
+            myLayout.setOrientation(LinearLayout.HORIZONTAL);
+            myLayout.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+            TextView textView = new TextView(this);
+            textView.setText(input.getTitle());
+            myLayout.addView(textView);
+            contentLayout.addView(myLayout);
+
             if((input.getType().compareTo("text") == 0) || (input.getType().compareTo("textarea") == 0)) {
 
                 final EditText editText = new EditText(this);
+                editText.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
                 editText.setHint(input.getTitle()); // Setting placeholder
 
                 editText.addTextChangedListener(new TextWatcher() { //Binding changes to view
@@ -208,18 +218,10 @@ public class NotificationActivity extends AppCompatActivity {
 
 
         RequestQueue requestQueue;
-
-// Instantiate the cache
-        Cache cache = new DiskBasedCache(getCacheDir(), 1024 * 1024); // 1MB cap
-
-// Set up the network to use HttpURLConnection as the HTTP client.
-        Network network = new BasicNetwork(new HurlStack());
-
-// Instantiate the RequestQueue with the cache and network.
-        requestQueue = new RequestQueue(cache, network);
-
-// Start the queue
-        requestQueue.start();
+        Cache cache = new DiskBasedCache(getCacheDir(), 1024 * 1024); // 1MB cap // Instantiate the cache
+        Network network = new BasicNetwork(new HurlStack()); // Set up the network to use HttpURLConnection as the HTTP client.
+        requestQueue = new RequestQueue(cache, network); // Instantiate the RequestQueue with the cache and network.
+        requestQueue.start(); // Start the queue
 
 
 
@@ -238,40 +240,6 @@ public class NotificationActivity extends AppCompatActivity {
         requestQueue.add(jsonObjectRequest);
 
         return null;
-
-        /*String data = "";
-
-        HttpURLConnection httpURLConnection = null;
-        try {
-
-            httpURLConnection = (HttpURLConnection) new URL(API_URL).openConnection();
-            httpURLConnection.setRequestMethod("PUT");
-
-            httpURLConnection.setDoOutput(true);
-
-            DataOutputStream wr = new DataOutputStream(httpURLConnection.getOutputStream());
-            wr.writeBytes(jsonArray.toString());
-            wr.flush();
-            wr.close();
-
-            InputStream in = httpURLConnection.getInputStream();
-            InputStreamReader inputStreamReader = new InputStreamReader(in);
-
-            int inputStreamData = inputStreamReader.read();
-            while (inputStreamData != -1) {
-                char current = (char) inputStreamData;
-                inputStreamData = inputStreamReader.read();
-                data += current;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            if (httpURLConnection != null) {
-                httpURLConnection.disconnect();
-            }
-        }
-
-        return data;*/
     }
 
 

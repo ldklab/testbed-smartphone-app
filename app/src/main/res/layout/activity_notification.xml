@@ -19,10 +19,17 @@
         android:layout_height="wrap_content"
         android:text="Interaction Content" />
 
+    <LinearLayout
+        android:id="@+id/content_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"></LinearLayout>
+
     <Button
         android:id="@+id/sendButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:backgroundTint="@color/colorPrimary"
         android:onClick="sendButton"
         android:text="Send" />
 
