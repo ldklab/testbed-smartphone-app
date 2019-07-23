@@ -4,10 +4,12 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.IBinder;
 import android.os.StrictMode;
 import android.preference.PreferenceManager;
+import android.text.format.Formatter;
 import android.util.Log;
 
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -59,6 +61,9 @@ public class DiscoverableService extends Service {
                 //socket.setBroadcast(true);
 
                 //sendBroadcast("192.168.0.255", "Test");
+                WifiManager wm = (WifiManager) getSystemService(WIFI_SERVICE);
+                String ip = Formatter.formatIpAddress(wm.getConnectionInfo().getIpAddress());
+
 
                 while (true) {
                     Log.i("MyDebug","Ready to receive broadcast packets!");
@@ -78,7 +83,7 @@ public class DiscoverableService extends Service {
                         Map<String, Object> myMap = new HashMap<>();
                         myMap.put("deviceID", deviceID);
                         myMap.put("name", deviceName);
-                        myMap.put("address", "192.168.0.102");
+                        myMap.put("address", ip);
                         myMap.put("timestamp", "1562941053222");
 
                         List<String> inCapabilities = new ArrayList<>();
