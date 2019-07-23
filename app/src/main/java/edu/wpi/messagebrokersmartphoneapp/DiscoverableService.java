@@ -74,33 +74,39 @@ public class DiscoverableService extends Service {
                     JSONObject jsonData = new JSONObject(data);
                     saveAPIURL(jsonData.getString("API_URL"));
 
-                    Map<String, Object> myMap = new HashMap<>();
-                    myMap.put("deviceID", deviceID);
-                    myMap.put("name", deviceName);
-                    myMap.put("address", "192.168.0.102");
-                    myMap.put("timestamp", "1562941053222");
+                    if(jsonData.getString("deviceType").compareTo("Smartphone") == 0){
+                        Map<String, Object> myMap = new HashMap<>();
+                        myMap.put("deviceID", deviceID);
+                        myMap.put("name", deviceName);
+                        myMap.put("address", "192.168.0.102");
+                        myMap.put("timestamp", "1562941053222");
 
-                    List<String> inCapabilities = new ArrayList<>();
-                    inCapabilities.add("text");
-                    inCapabilities.add("microphone");
-                    inCapabilities.add("camera");
-                    List<String> outCapabilities = new ArrayList<>();
-                    outCapabilities.add("text");
-                    outCapabilities.add("video");
-                    outCapabilities.add("audio");
-                    outCapabilities.add("vibration");
-                    outCapabilities.add("notification");
-                    Map<String, List> capabilitiesMap = new HashMap<>();
-                    capabilitiesMap.put("in", inCapabilities);
-                    capabilitiesMap.put("out", outCapabilities);
+                        List<String> inCapabilities = new ArrayList<>();
+                        inCapabilities.add("text");
+                        inCapabilities.add("microphone");
+                        inCapabilities.add("camera");
+                        List<String> outCapabilities = new ArrayList<>();
+                        outCapabilities.add("text");
+                        outCapabilities.add("video");
+                        outCapabilities.add("audio");
+                        outCapabilities.add("vibration");
+                        outCapabilities.add("notification");
+                        Map<String, List> capabilitiesMap = new HashMap<>();
+                        capabilitiesMap.put("in", inCapabilities);
+                        capabilitiesMap.put("out", outCapabilities);
 
-                    myMap.put("capabilities", capabilitiesMap);
+                        myMap.put("capabilities", capabilitiesMap);
 
-                    JSONObject jsonObject = new JSONObject(myMap);
+                        JSONObject jsonObject = new JSONObject(myMap);
 
-                    System.out.println("About to send: " + jsonObject.toString());
+                        System.out.println("About to send: " + jsonObject.toString());
 
-                    sendUDPMessage(packet.getAddress().getHostAddress(), packet.getPort(), jsonObject.toString());
+                        sendUDPMessage(packet.getAddress().getHostAddress(), packet.getPort(), jsonObject.toString());
+                    }else{
+                        System.out.println("This message is for " + jsonData.getString("deviceType"));
+                    }
+
+
                 }
 
             } catch (Exception ex) {
