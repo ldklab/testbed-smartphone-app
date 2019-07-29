@@ -188,6 +188,8 @@ public class NotificationActivity extends AppCompatActivity {
 
         System.out.println("Sending data to API_URL: " + API_URL);
         jsonPUT(API_URL, interactionResponses);
+
+        finish();
     }
 
 
