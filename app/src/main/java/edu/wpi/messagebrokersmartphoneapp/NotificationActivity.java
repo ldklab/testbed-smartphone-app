@@ -81,19 +81,33 @@ public class NotificationActivity extends AppCompatActivity {
         String interactionData = intent.getStringExtra("INTERACTION");
         interactionID = intent.getStringExtra("INTERACTION_ID");
 
+
+        List<String> instructions = getInstructions(interactionData);
+        String completeInstructions = "\n\n";
+        if(instructions != null) {
+            int ii = 1;
+            for (String e : instructions) {
+                completeInstructions += ii + ". " + e + '\n';
+                ii++;
+            }
+        }
+
+
         // Setting Title and Content in the view
         TextView titleTextView = findViewById(R.id.title); // Title
         titleTextView.setText(title);
         TextView contentTextView = findViewById(R.id.content); // Content
-        contentTextView.setText(description);
+        contentTextView.setText(description + completeInstructions);
 
-        //Let's (try) to retrieve all the data
+
+
+                //Let's (try) to retrieve all the data
         String specific; //ToDo: implement
         String[] insructions; //ToDo: implement
         List<InteractionInput> inputs = processInput(interactionData); // Input retrieved
 
         interactionResponses = new ArrayList<>();
-        LinearLayout contentLayout = (LinearLayout) findViewById(R.id.content_layout);
+        LinearLayout contentLayout = findViewById(R.id.content_layout);
 
         for(int i = 0; i < inputs.size(); i++) {
             final InteractionInput input = inputs.get(i);
@@ -209,7 +223,7 @@ public class NotificationActivity extends AppCompatActivity {
             jsonArray.put(jsonObject);
         }
         System.out.println("Real data: " + jsonArray.toString());
-        JSONObject finalObject = new JSONObject();;
+        JSONObject finalObject = new JSONObject();
         try{
             finalObject.put("data", jsonArray);
         }catch(Exception e){
@@ -277,6 +291,31 @@ public class NotificationActivity extends AppCompatActivity {
             }
 
             return inputs;
+            //arrayAdapter.notifyDataSetChanged();
+        }catch(Exception e) {
+            Log.d("MyDebugError", e.toString());
+            //System.out.println(e);
+        }
+
+        return null;
+    }
+
+    private List<String> getInstructions(String interactionData){
+        List<String> instructions = new ArrayList<>();
+
+        try {
+            JSONObject interactionDataJson = new JSONObject(interactionData);
+            JSONArray jsonSingleString = interactionDataJson.getJSONArray("instructions");
+
+            if(jsonSingleString.length() == 0){
+                return null;
+            }
+
+            for(int i = 0; i < jsonSingleString.length(); i++){
+                instructions.add(jsonSingleString.optString(i));
+            }
+
+            return instructions;
             //arrayAdapter.notifyDataSetChanged();
         }catch(Exception e) {
             Log.d("MyDebugError", e.toString());
